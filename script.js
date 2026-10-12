@@ -335,7 +335,10 @@ const footerYear = document.querySelector('.js-footer-year');
 const currentYear = new Date().getFullYear();
 footerYear.textContent = currentYear;
 
-let simulation = new Simulation(200, 100, document.querySelector('.simulation'));
+const canvas = document.querySelector('.simulation');
+const width = parseInt(canvas.clientWidth / 3);
+const height = parseInt(canvas.clientHeight / 3);
+let simulation = new Simulation(width, height, document.querySelector('.simulation'));
 
 const runSimulation = async () => { 
   while (true) {
