@@ -8,7 +8,7 @@ class Cell {
         return this.type === 0;
     }
 }
-
+ 
 class Simulation {
     constructor(width, height, canvas) {
         this.width = width;
@@ -17,15 +17,16 @@ class Simulation {
         this.canvas = canvas;
         canvas.width = width;
         canvas.height = height;
+        this.bitmap = new ImageData(width, height);
     }
 
     static materialData = {
-        0: { name: 'Empty', color: 'white', updates: false },
-        1: { name: 'Sand', color: 'yellow', updates: true },
-        2: { name: 'Water', color: 'blue', updates: true, flows: true },
-        3: { name: 'Lava', color: 'red', updates: true, flows: true },
-        4: { name: 'Ash', color: 'gray', updates: true },
-        5: { name: 'Smoke', color: 'gray', updates: true, flows: true },
+        0: { name: 'Empty', color: '#ffffff', updates: false },
+        1: { name: 'Sand', color: '#ffff00', updates: true },
+        2: { name: 'Water', color: '#0000ff', updates: true, flows: true },
+        3: { name: 'Lava', color: '#ff0000', updates: true, flows: true },
+        4: { name: 'Ash', color: '#808080', updates: true },
+        5: { name: 'Smoke', color: '#808080', updates: true, flows: true },
     };
 
     getIndex(x, y) {
@@ -99,14 +100,22 @@ class Simulation {
     }
 
     Draw() {
-        const ctx = this.canvas.getContext('2d');
-        ctx.clearRect(0, 0, this.width, this.height);
+
+
+
         for (let y = 0; y < this.height; y++) {
             for (let x = 0; x < this.width; x++) {
                 let cell = this.getCell(x, y);
-                ctx.fillStyle = Simulation.materialData[cell.type].color;
-                ctx.fillRect(x, y, 1, 1);
+                const color = Simulation.materialData[cell.type].color;
+                this.bitmap.data[(y * this.width + x) * 4] = parseInt(color.slice(1, 3), 16); // R
+                this.bitmap.data[(y * this.width + x) * 4 + 1] = parseInt(color.slice(3, 5), 16); // G
+                this.bitmap.data[(y * this.width + x) * 4 + 2] = parseInt(color.slice(5, 7), 16); // B
+                this.bitmap.data[(y * this.width + x) * 4 + 3] = 255; // A
             }
         }
+
+        const ctx = this.canvas.getContext('2d');
+        ctx.clearRect(0, 0, this.width, this.height);
+        ctx.putImageData(this.bitmap, 0, 0);
     }
 }
