@@ -87,17 +87,19 @@
     <main>
 
         <section class="hero" id="top">
-            <canvas class="simulation"></canvas>
-            <div class="hero__top">
-                <p class="label">Computer Engineering<br>Gebze Technical University</p>
+            <div class="hero__stage">
+                <canvas class="simulation"></canvas>
+                <div class="hero__top">
+                    <p class="label">Computer Engineering<br>Gebze Technical University</p>
+                </div>
+                <h1 class="hero__name">
+                    <!-- Nested spans, the outer one is styled as a block element, the inner isn't -->
+                    <!-- The outer one is styled as display:block so the two words are never on the same line  -->
+                    <!-- The inner one is normal so the word's container has its actual width-->
+                    <span class="hero__line"><span>Mohammed</span></span>
+                    <span class="hero__line"><span>Alaklouk</span></span>
+                </h1>
             </div>
-            <h1 class="hero__name">
-                <!-- Nested spans, the outer one is styled as a block element, the inner isn't -->
-                <!-- The outer one is styled as display:block so the two words are never on the same line  -->
-                <!-- The inner one is normal so the word's container has its actual width-->
-                <span class="hero__line"><span>Mohammed</span></span>
-                <span class="hero__line"><span>Alaklouk</span></span>
-            </h1>
             <div class="hero__ground">
                 <p class="hero__tagline">
                     I build <em>simulations</em> and <em>systems</em> in&nbsp;C++.

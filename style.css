@@ -1140,12 +1140,13 @@ footer {
 
 .simulation {
     position: absolute;
+    max-width: none;
     height: 100%;
+    width: 100vw;
     z-index: -1; /* Pushes the canvas behind the text content */
     pointer-events: none; 
     left: calc(-1 * var(--pad));
-    width: 100vw;
     top: calc(-1 * var(--space-s));
     height: calc(100% + var(--space-s));
-    max-width: none;
+    image-rendering: pixelated;
 }
