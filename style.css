@@ -406,8 +406,14 @@ section:focus-visible {
     min-height: 100vh;
     min-height: 100svh;
     display: grid;
-    grid-template-rows: auto 1fr auto;
+    grid-template-rows: 1fr auto;
     grid-template-columns: minmax(0, 1fr);
+}
+
+.hero__stage {
+    position: relative;
+    display: grid; 
+    grid-template-rows: auto 1fr;
 }
 
 .hero__ground {
@@ -1133,5 +1139,13 @@ footer {
 /* ── simulation (temp) ─────────────────────────────────────────── */
 
 .simulation {
-    width: 100%;
+    position: absolute;
+    height: 100%;
+    z-index: -1; /* Pushes the canvas behind the text content */
+    pointer-events: none; 
+    left: calc(-1 * var(--pad));
+    width: 100vw;
+    top: calc(-1 * var(--space-s));
+    height: calc(100% + var(--space-s));
+    max-width: none;
 }
