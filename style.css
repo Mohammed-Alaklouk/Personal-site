@@ -1129,3 +1129,9 @@ footer {
 
     .marquee__track { animation: none; }
 }
+
+/* ── simulation (temp) ─────────────────────────────────────────── */
+
+.simulation {
+    width: 100%;
+}

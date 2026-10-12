@@ -334,3 +334,16 @@ copyButtons.forEach((btn) => {
 const footerYear = document.querySelector('.js-footer-year');
 const currentYear = new Date().getFullYear();
 footerYear.textContent = currentYear;
+
+let simulation = new Simulation(200, 100, document.querySelector('.simulation'));
+
+const runSimulation = async () => { 
+  while (true) {
+    simulation.grid.at(50).type = 2;
+    simulation.Update();
+    simulation.Draw();
+    await new Promise(requestAnimationFrame);
+  }
+}
+
+runSimulation();
