@@ -336,11 +336,60 @@ const currentYear = new Date().getFullYear();
 footerYear.textContent = currentYear;
 
 const canvas = document.querySelector('.simulation');
-const cellSize = Math.round(5 / window.devicePixelRatio);
+const cellSize = Math.round(4 / window.devicePixelRatio);
 const width = Math.floor(canvas.clientWidth / cellSize);
 const height = Math.floor(canvas.clientHeight / cellSize);
 console.log(`pixel ratio: ${window.devicePixelRatio}, canvas width: ${canvas.clientWidth}, canvas height: ${canvas.clientHeight}, simulation width: ${width}, simulation height: ${height}`);
 let simulation = new Simulation(width, height, document.querySelector('.simulation'), document.querySelector('.hero__stage'));
+
+const tempCanvas = document.createElement('canvas');
+tempCanvas.width = width;
+tempCanvas.height = height;
+const tempCtx = tempCanvas.getContext('2d');
+
+const getTextCells = () => {
+  const h1 = document.querySelector('.hero__name');
+  const cs = getComputedStyle(h1);
+  const canvasRect = canvas.getBoundingClientRect();
+
+  // Reset, then scale so 1 CSS px on the page = 1/cellSize of a cell
+  tempCtx.setTransform(1, 0, 0, 1, 0, 0);
+  tempCtx.clearRect(0, 0, width, height);
+  tempCtx.scale(1 / cellSize, 1 / cellSize);
+
+  // Copy the h1's resolved font settings (all already in px)
+  tempCtx.font = `${cs.fontStyle} ${cs.fontWeight} ${cs.fontSize} ${cs.fontFamily}`;
+  tempCtx.letterSpacing = cs.letterSpacing;
+  tempCtx.textBaseline = 'alphabetic';
+  tempCtx.fillStyle = '#000';
+
+  // Draw each word where the browser laid it out
+  h1.querySelectorAll('.hero__line > span').forEach((word) => {
+    const rect = word.getBoundingClientRect();
+    const text = word.textContent;
+    const ascent = tempCtx.measureText(text).fontBoundingBoxAscent;
+    tempCtx.fillText(text, rect.left - canvasRect.left, rect.top - canvasRect.top + ascent);
+  });
+
+  // One pixel per cell: 1 if the text covers it, 0 if not
+  const data = tempCtx.getImageData(0, 0, width, height).data;
+  const cells = new Uint8Array(width * height);
+  for (let i = 0; i < cells.length; i++) {
+    cells[i] = data[i * 4 + 3] > 128 ? 1 : 0;
+  }
+  return cells;
+};
+
+document.fonts.ready.then(() => {
+  const textCells = getTextCells();
+  textCells.forEach((cell, index) => {
+    if (cell === 1) {
+      const x = index % width;
+      const y = Math.floor(index / width);
+      simulation.setMaterial(x, y, 7); // Set to solid
+    }
+  });
+});
 
 const runSimulation = async () => { 
   while (true) {
