@@ -336,13 +336,14 @@ const currentYear = new Date().getFullYear();
 footerYear.textContent = currentYear;
 
 const canvas = document.querySelector('.simulation');
-const width = parseInt(canvas.clientWidth / 3);
-const height = parseInt(canvas.clientHeight / 3);
-let simulation = new Simulation(width, height, document.querySelector('.simulation'));
+const cellSize = Math.round(5 / window.devicePixelRatio);
+const width = Math.floor(canvas.clientWidth / cellSize);
+const height = Math.floor(canvas.clientHeight / cellSize);
+console.log(`pixel ratio: ${window.devicePixelRatio}, canvas width: ${canvas.clientWidth}, canvas height: ${canvas.clientHeight}, simulation width: ${width}, simulation height: ${height}`);
+let simulation = new Simulation(width, height, document.querySelector('.simulation'), document.querySelector('.hero__stage'));
 
 const runSimulation = async () => { 
   while (true) {
-    simulation.grid.at(50).type = 2;
     simulation.Update();
     simulation.Draw();
     await new Promise(requestAnimationFrame);
