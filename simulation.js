@@ -10,18 +10,26 @@ class Cell {
 }
  
 class Simulation {
-    constructor(width, height, canvas) {
+    constructor(width, height, canvas, heroStage) {
         this.width = width;
         this.height = height;
         this.grid = new Array(height * width).fill(null).map(() => new Cell(0));
         this.canvas = canvas;
+        this.heroStage = heroStage;
         canvas.width = width;
         canvas.height = height;
         this.bitmap = new ImageData(width, height);
+
+        heroStage.addEventListener('mousemove', (event) => {
+            const rect = canvas.getBoundingClientRect();
+            const x = Math.floor((event.clientX - rect.left) * (canvas.width / rect.width));
+            const y = Math.floor((event.clientY - rect.top) * (canvas.height / rect.height));
+            this.SetMaterialCircle(x, y, 1, 5);
+        });
     }
 
     static materialData = {
-        0: { name: 'Empty', color: '#ffffff', updates: false },
+        0: { name: 'Empty', color: '#00000000', updates: false },
         1: { name: 'Sand', color: '#ffff00', updates: true },
         2: { name: 'Water', color: '#0000ff', updates: true, flows: true },
         3: { name: 'Lava', color: '#ff0000', updates: true, flows: true },
@@ -51,6 +59,19 @@ class Simulation {
             for (let x = 0; x < this.width; x++) {
                 let cell = this.getCell(x, y);
                 cell.isProcessed = false;
+            }
+        }
+    }
+
+    SetMaterialCircle(x, y, type, radius) {
+        for (let dy = -radius; dy <= radius; dy++) {
+            for (let dx = -radius; dx <= radius; dx++) {
+                if (!this.isInBounds(x + dx, y + dy)) continue;
+                if (this.getCell(x + dx, y + dy).type !== 0) continue;
+
+                if (dx * dx + dy * dy <= radius * radius) {
+                    this.setMaterial(x + dx, y + dy, type);
+                }
             }
         }
     }
@@ -100,9 +121,6 @@ class Simulation {
     }
 
     Draw() {
-
-
-
         for (let y = 0; y < this.height; y++) {
             for (let x = 0; x < this.width; x++) {
                 let cell = this.getCell(x, y);
