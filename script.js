@@ -335,26 +335,24 @@ const footerYear = document.querySelector('.js-footer-year');
 const currentYear = new Date().getFullYear();
 footerYear.textContent = currentYear;
 
-const canvas = document.querySelector('.simulation');
-const cellSize = Math.round(4 / window.devicePixelRatio);
-const width = Math.floor(canvas.clientWidth / cellSize);
-const height = Math.floor(canvas.clientHeight / cellSize);
-console.log(`pixel ratio: ${window.devicePixelRatio}, canvas width: ${canvas.clientWidth}, canvas height: ${canvas.clientHeight}, simulation width: ${width}, simulation height: ${height}`);
-let simulation = new Simulation(width, height, document.querySelector('.simulation'), document.querySelector('.hero__stage'));
+// == Hero simulation ==
 
-const tempCanvas = document.createElement('canvas');
-tempCanvas.width = width;
-tempCanvas.height = height;
-const tempCtx = tempCanvas.getContext('2d');
+const canvas = document.querySelector('.simulation');
+const heroStage = document.querySelector('.hero__stage');
+let cellSize = Math.max(1, Math.round(4 / window.devicePixelRatio));
+let width = Math.floor(canvas.clientWidth / cellSize);
+let height = Math.floor(canvas.clientHeight / cellSize);
+let simulation = new Simulation(width, height, canvas, heroStage);
 
 const getTextCells = () => {
   const h1 = document.querySelector('.hero__name');
   const cs = getComputedStyle(h1);
   const canvasRect = canvas.getBoundingClientRect();
+  const tempCanvas = document.createElement('canvas');
+  tempCanvas.width = width;
+  tempCanvas.height = height;
+  const tempCtx = tempCanvas.getContext('2d');
 
-  // Reset, then scale so 1 CSS px on the page = 1/cellSize of a cell
-  tempCtx.setTransform(1, 0, 0, 1, 0, 0);
-  tempCtx.clearRect(0, 0, width, height);
   tempCtx.scale(1 / cellSize, 1 / cellSize);
 
   // Copy the h1's resolved font settings (all already in px)
@@ -380,16 +378,27 @@ const getTextCells = () => {
   return cells;
 };
 
-document.fonts.ready.then(() => {
-  const textCells = getTextCells();
-  textCells.forEach((cell, index) => {
-    if (cell === 1) {
-      const x = index % width;
-      const y = Math.floor(index / width);
-      simulation.setMaterial(x, y, 7); // Set to solid
+const stampTextCells = () => {
+  getTextCells().forEach((value, index) => {
+    if (value) {
+      simulation.setMaterial(index % width, Math.floor(index / width), 7);
     }
   });
+};
+
+document.fonts.ready.then(stampTextCells);
+
+const resizeObserver = new ResizeObserver(() => {
+  cellSize = Math.max(1, Math.round(4 / window.devicePixelRatio));
+  width = Math.floor(canvas.clientWidth / cellSize);
+  height = Math.floor(canvas.clientHeight / cellSize);
+  if (width === simulation.width && height === simulation.height) return;
+
+  simulation.resize(width, height);
+  stampTextCells();
 });
+
+resizeObserver.observe(canvas);
 
 const runSimulation = async () => { 
   while (true) {

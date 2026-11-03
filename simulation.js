@@ -28,6 +28,15 @@ class Simulation {
         });
     }
 
+    resize(newWidth, newHeight) {
+        this.width = newWidth;
+        this.height = newHeight;
+        this.grid = new Array(newHeight * newWidth).fill(null).map(() => new Cell(0));
+        this.canvas.width = newWidth;
+        this.canvas.height = newHeight;
+        this.bitmap = new ImageData(newWidth, newHeight);
+    }
+
     static materialData = {
         0: { name: 'Empty', color: '#00000000', updates: false },
         1: { name: 'Sand', color: '#ffff00', updates: true },
